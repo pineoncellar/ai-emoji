@@ -118,7 +118,10 @@ async def match_emoji_by_emotion(request: MatchRequest = Body(...)):
             "description": description,
             "base64": base64_data
         }
-    raise HTTPException(status_code=404, detail="未找到匹配的表情包")
+    return {
+        "status": "fail",
+        "detail": "未找到匹配的表情包"
+    }
 
 # @router.get("/unreviewed-list")
 # async def list_unreviewed_images():
