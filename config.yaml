@@ -1,0 +1,19 @@
+# 表情包API服务全局配置
+emoji:
+  check_interval: 1 # 扫描间隔（分钟）
+  max_reg_num: 100 # 最大注册表情包数量
+  do_replace: false # 达到最大数量后是否替换
+  content_filtration: true # 是否进行内容过滤
+  filtration_prompt: "健康、积极、符合社区规范的内容" # 过滤提示词
+  # 可扩展更多emoji相关配置
+model:
+  vlm: "deepseek-ai/deepseek-vl2" # VLM模型名称
+  utils: "Qwen/Qwen2.5-32B-Instruct" # 通用模型名称
+  base_url: "https://api.siliconflow.cn/v1" # API基础URL
+  api_key: "sk-auwpdqkpkumctztjgwxywthcnugrwobjivzsdoretkqqpvsd" # API密钥
+  max_token: 2048 # 模型最大输出长度
+  # 可扩展更多模型相关配置
+# 机器人相关配置
+bot:
+  nickname: "AI表情助手" # 机器人昵称
+# 可扩展更多全局配置

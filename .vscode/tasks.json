@@ -1,0 +1,13 @@
+{
+  // 使用 VS Code 任务运行 Python 主程序
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Run main.py",
+      "type": "shell",
+      "command": "python main.py",
+      "group": "build",
+      "problemMatcher": []
+    }
+  ]
+}

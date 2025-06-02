@@ -1,0 +1,22 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# test files
+test*
+
+# log files
+logs
+
+# data files
+data/emoji_approved/*
+data/emoji_registed/* 
+data/emoji_unreviewed/*
+data/emoji_data.json
