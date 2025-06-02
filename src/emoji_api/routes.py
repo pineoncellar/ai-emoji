@@ -1,10 +1,13 @@
 from fastapi import APIRouter, UploadFile, File, HTTPException
-from fastapi import Body
+from fastapi import Body, Request
 from pydantic import BaseModel
 from src.emoji_manager.manager import emoji_manager
 from .utils import generate_filename
 from src.common.utils_image import image_path_to_base64
 import os
+from typing import Optional
+import aiohttp
+import time
 
 router = APIRouter()
 
@@ -12,18 +15,48 @@ class MatchRequest(BaseModel):
     text: str
 
 @router.post("/upload")
-async def upload_image(image: UploadFile = File(...)):
-    """图片上报接口"""
+async def upload_image(
+    request: Request
+) -> dict:
+    """
+    图片上报接口，仅支持 JSON 格式的图片链接上传。
+
+    Args:
+        request (Request): 请求对象，需包含 image_url 字段
+
+    Returns:
+        dict: 上传结果
+    """
     try:
-        filename = generate_filename(image)
-        image_data = await image.read()
+        data = await request.json()
+        url = data.get("image_url")
+        if not url:
+            raise HTTPException(status_code=400, detail="请提供图片链接")
+        # 从链接下载图片
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+        }
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, headers=headers) as resp:
+                if resp.status != 200:
+                    detail = f"图片链接{url}下载失败，状态码: {resp.status}"
+                    try:
+                        error_text = await resp.text()
+                        detail += f"，响应内容: {error_text[:200]}"
+                    except Exception:
+                        pass
+                    raise HTTPException(status_code=400, detail=detail)
+                image_data = await resp.read()
+        # 从链接推断文件名
+        # filename = os.path.basename(url.split("?")[0])
+        filename = f"{int(time.time() * 1000)}.jpg"
         filepath = await emoji_manager.save_unreviewed_image(image_data, filename)
         return {
-            "status": "success",
-            "message": "图片已保存待审核",
-            "filename": filename,
-            "preview_url": f"/preview/unreviewed/{filename}"
+            "status": "ok",
+            "message": "图片已保存待审核"
         }
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -79,7 +112,7 @@ async def match_emoji_by_emotion(request: MatchRequest = Body(...)):
         except Exception as e:
             base64_data = None
         return {
-            "status": "success",
+            "status": "ok",
             "text": request.text,
             "emoji_path": file_path,
             "description": description,
