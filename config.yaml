@@ -10,8 +10,8 @@ emoji:
 model:
   vlm: "deepseek-ai/deepseek-vl2" # VLM模型名称
   utils: "Qwen/Qwen2-VL-72B-Instruct" # 通用模型名称
-  base_url: "https://api.siliconflow.cn/v1" # API基础URL
-  api_key: "sk-auwpdqkpkumctztjgwxywthcnugrwobjivzsdoretkqqpvsd" # API密钥
+  base_url: "your-api-base-url" # API基础URL
+  api_key: "your-api-key" # API密钥
   max_token: 2048 # 模型最大输出长度
   # 可扩展更多模型相关配置
 # 机器人相关配置
