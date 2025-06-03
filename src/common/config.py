@@ -12,6 +12,7 @@ class EmojiConfig(BaseModel):
     do_replace: bool = False  # 达到最大数量后是否替换
     content_filtration: bool = True  # 是否进行内容过滤
     filtration_prompt: str = "健康、积极、符合社区规范的内容"  # 过滤提示词
+    similarity_limit: float = 0.5  # 相似度限制，范围0-1
     # 可扩展更多emoji相关配置
 
 class ModelConfig(BaseModel):

@@ -282,19 +282,22 @@ class EmojiManager:
                 emotions = emoji.emotion
                 if not emotions:
                     continue
+                similarity_limit = global_config.emoji.similarity_limit
                 max_similarity = 0
                 best_matching_emotion = ""
                 for emotion in emotions:
                     distance = self._levenshtein_distance(text_emotion, emotion)
                     max_len = max(len(text_emotion), len(emotion))
                     similarity = 1 - (distance / max_len if max_len > 0 else 0)
-                    if similarity > max_similarity:
+                    if similarity > similarity_limit:
                         max_similarity = similarity
                         best_matching_emotion = emotion
-                if best_matching_emotion:
-                    emoji_similarities.append((emoji, max_similarity, best_matching_emotion))
+                        emoji_similarities.append((emoji, max_similarity, best_matching_emotion))
             emoji_similarities.sort(key=lambda x: x[1], reverse=True)
             top_emojis = emoji_similarities[:10] if len(emoji_similarities) > 10 else emoji_similarities
+            logger.info(
+                f"为[{text_emotion}]找到 {len(top_emojis)} 个匹配的表情包，前10: {[(e[0].emotion, e[1]) for e in top_emojis]}"
+            )
             if not top_emojis:
                 logger.warning("未找到匹配的表情包")
                 return None
@@ -402,7 +405,8 @@ class EmojiManager:
                     for filename in files_to_process:
                         success = await self.register_emoji_by_filename(filename)
                         if success:
-                            break
+                            # break
+                            continue
                         else:
                             file_path = os.path.join(EMOJI_APPROVED_DIR, filename)
                             os.remove(file_path)
