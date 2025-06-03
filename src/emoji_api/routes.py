@@ -4,10 +4,14 @@ from pydantic import BaseModel
 from src.emoji_manager.manager import emoji_manager
 from .utils import generate_filename
 from src.common.utils_image import image_path_to_base64
+from src.common.logger_manager import get_logger
 import os
 from typing import Optional
 import aiohttp
 import time
+import ssl
+
+logger = get_logger("routes")
 
 router = APIRouter()
 
@@ -36,8 +40,11 @@ async def upload_image(
         headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
         }
+        # 创建一个兼容性更好的 SSL 上下文
+        ssl_context = ssl.create_default_context()
+        ssl_context.set_ciphers("DEFAULT@SECLEVEL=1")  # 降低安全级别以兼容老旧服务器
         async with aiohttp.ClientSession() as session:
-            async with session.get(url, headers=headers) as resp:
+            async with session.get(url, headers=headers, ssl=ssl_context) as resp:
                 if resp.status != 200:
                     detail = f"图片链接{url}下载失败，状态码: {resp.status}"
                     try:
@@ -58,6 +65,7 @@ async def upload_image(
     except HTTPException:
         raise
     except Exception as e:
+        logger.error(f"上传图片失败: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 # @router.post("/approve/{filename}")
