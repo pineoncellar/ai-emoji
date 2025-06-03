@@ -20,3 +20,9 @@ data/emoji_approved/*
 data/emoji_registed/* 
 data/emoji_unreviewed/*
 data/emoji_data.json
+
+# launch files
+run.bat
+
+# spec files
+*.spec
